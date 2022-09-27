@@ -158,7 +158,7 @@ workflows:
             - build 
       - actual_release:
           requires:
-            - check_release
+            - test
           filters:
             branches:
               only:
