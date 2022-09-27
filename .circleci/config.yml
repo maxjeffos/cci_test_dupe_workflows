@@ -148,11 +148,14 @@ workflows:
   build_test_release:
     when:
       and:
+        - equal: [ "main", << pipeline.git.branch >> ]
         - equal: [ scheduled_pipeline, << pipeline.trigger_source >> ]  # these are built-in names
         - equal: [ "my-scheduled-release", << pipeline.schedule.name >> ]
     jobs:
       - build
-      - test
+      - test:
+          requires:
+            - build 
       - actual_release:
           requires:
             - check_release
