@@ -37,6 +37,9 @@ jobs:
       - run:
           name: Do Prepare Release
           command: echo "Doing release preparation"
+      - run:
+          name: Halt
+          command: circleci-agent step halt 
 
   actual_release:
     machine:
@@ -50,6 +53,21 @@ jobs:
           name: Real Release Stuff
           command: echo "Doing the actual release stuff that we only want to do for a real release."
 
+
+  fake_release:
+    machine:
+      image: ubuntu-2204:2022.07.1
+    working_directory: /home/circleci/test_cci_conditionals
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Real Release Stuff
+          command: echo "Doing the actual release stuff that we only want to do for a real release."
+
+
+
 workflows:
   build_test:
     jobs:
@@ -60,6 +78,10 @@ workflows:
       - prepare_release:
           requires:
             - test
+      - fake_release:
+          requires:
+            - prepare_release
+
 
   build_test_release:
     when:
