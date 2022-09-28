@@ -71,13 +71,7 @@ ReleaseJob: &releaseJob
 workflows:
   build_test:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
-      - prepare_release:
-          requires:
-            - test
+      *buildAndTestJobs
 
   build_test_release:
     when:
@@ -100,3 +94,37 @@ workflows:
             branches:
               only:
                 - main
+
+# orig - using full duplication
+# workflows:
+#   build_test:
+#     jobs:
+#       - build
+#       - test:
+#           requires:
+#             - build
+#       - prepare_release:
+#           requires:
+#             - test
+
+#   build_test_release:
+#     when:
+#       and:
+#         - equal: [ "main", << pipeline.git.branch >> ]
+#         - equal: [ scheduled_pipeline, << pipeline.trigger_source >> ]  # these are built-in names
+#         - equal: [ "my-scheduled-release", << pipeline.schedule.name >> ]
+#     jobs:
+#       - build
+#       - test:
+#           requires:
+#             - build 
+#       - prepare_release:
+#           requires:
+#             - test
+#       - actual_release:
+#           requires:
+#             - prepare_release
+#           filters:
+#             branches:
+#               only:
+#                 - main
